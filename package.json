@@ -1,6 +1,6 @@
 {
   "name": "@jasonkuhrt/config-presets",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Strict tsconfig, Oxlint and Oxfmt presets for Effect TypeScript projects.",
   "keywords": [
     "effect",
@@ -14,6 +14,10 @@
   "author": {
     "name": "Jason Kuhrt",
     "url": "https://kuhrt.me"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jasonkuhrt/config-presets.git"
   },
   "files": [
     "build",

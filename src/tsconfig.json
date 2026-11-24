@@ -1,0 +1,236 @@
+// A strict compiler policy for Effect TypeScript projects run on Bun:
+// @tsconfig/strictest, plus the @effect/language-service plugin with every
+// Effect diagnostic set to error except the few turned off at the end.
+//
+// It is written for tsrs (`tsrs --noEmit --fast`). A consumer's postinstall
+// runs `effect-tsgo patch --typescript=false --tsrs`, which swaps Effect's build
+// of tsrs into the installed package; that build reports the diagnostics below,
+// and every one of them fails the check.
+//
+// A consumer adds only what is its own: `include`, `exclude`, and a build
+// config with its output options.
+{
+  "extends": "@tsconfig/strictest/tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "module": "Preserve",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "types": ["bun"],
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "resolveJsonModule": true,
+    "noUncheckedSideEffectImports": true,
+    "noErrorTruncation": true,
+    "skipLibCheck": true,
+    "incremental": true,
+    "tsBuildInfoFile": "${configDir}/node_modules/.cache/tsbuildinfo",
+    "plugins": [
+      {
+        "name": "@effect/language-service",
+        "diagnostics": true,
+        "includeSuggestionsInTsc": true,
+        "ignoreEffectSuggestionsInTscExitCode": false,
+        "ignoreEffectWarningsInTscExitCode": false,
+        "ignoreEffectErrorsInTscExitCode": false,
+        "topLevelNamedReexports": "follow",
+        "extendedKeyDetection": true,
+        // Pipes for two or more transformations; a single call stays direct. At 1, the rule's fix pipes a lone
+        // `Schema.Class<Self>(id)(fields)` into `fields.pipe(Schema.Class…)`,
+        // which effect 4.1.2's overloads type with every field `unknown`.
+        "pipeableMinArgCount": 2,
+        // Every Effect.fn variant, so effectFnOpportunity reaches every
+        // function whose body could be an Effect.fn.
+        "effectFn": [
+          "span",
+          "untraced",
+          "no-span",
+          "inferred-span",
+          "suggested-span"
+        ],
+        // No "error" pattern: a TaggedError's key is its public _tag, and
+        // moving a file must not rename the failure that consumers match on.
+        "keyPatterns": [
+          {
+            "target": "service",
+            "pattern": "default",
+            "skipLeadingPath": ["src/"]
+          },
+          {
+            "target": "custom",
+            "pattern": "default",
+            "skipLeadingPath": ["src/"]
+          }
+        ],
+        // Every rule @effect/tsgo 0.67.5 ships is named here, so an upgrade
+        // that adds one shows up as a rule this list doesn't name. Deprecated
+        // rules are left out: preferSchemaOverJson (superseded by globalJson
+        // and globalJsonInEffect, both below) fails the check when it is named.
+        "diagnosticSeverity": {
+          "abortControllerInEffect": "error",
+          "acquireReleaseDisposable": "error",
+          "allOfMapToForEach": "error",
+          "anyUnknownInErrorContext": "error",
+          "asyncFunction": "error",
+          "catchAllTagDispatchToCatchTag": "error",
+          "catchAllToMapError": "error",
+          "catchChainToFirstSuccessOf": "error",
+          "catchConditionalRefailToCatchIf": "error",
+          "catchDieToOrDie": "error",
+          "catchIfTagToCatchTag": "error",
+          "catchRefailToTapError": "error",
+          "catchTagToCatchReason": "error",
+          "catchToIgnore": "error",
+          "catchToOrElseSucceed": "error",
+          "catchUnfailableEffect": "error",
+          "classSelfMismatch": "error",
+          "cryptoRandomUUID": "error",
+          "cryptoRandomUUIDInEffect": "error",
+          "deterministicKeys": "error",
+          "duplicatePackage": "error",
+          "effectDoNotation": "error",
+          "effectFnIife": "error",
+          "effectFnImplicitAny": "error",
+          "effectFnOpportunity": "error",
+          "effectGenUsesAdapter": "error",
+          "effectInFailure": "error",
+          "effectInVoidSuccess": "error",
+          "effectMapFlatten": "error",
+          "effectMapVoid": "error",
+          "effectSleepZeroToYieldNow": "error",
+          "effectSucceedWithUndefined": "error",
+          "effectSucceedWithVoid": "error",
+          "effectTryWithoutCatch": "error",
+          "errorPayloadShadowsName": "error",
+          "extendsNativeError": "error",
+          "failCauseToConstructor": "error",
+          "flatMapConditionalToFilterOrFail": "error",
+          "flatMapIdentityToFlatten": "error",
+          "flatMapIgnoredParamToAndThen": "error",
+          "flatMapToMap": "error",
+          "flatMapToTap": "error",
+          "floatingEffect": "error",
+          "floatingEffectInVitest": "error",
+          "genericEffectServices": "error",
+          "globalConsole": "error",
+          "globalConsoleInEffect": "error",
+          "globalDate": "error",
+          "globalDateInEffect": "error",
+          "globalErrorInEffectCatch": "error",
+          "globalErrorInEffectFailure": "error",
+          "globalFetch": "error",
+          "globalFetchInEffect": "error",
+          "globalJson": "error",
+          "globalJsonInEffect": "error",
+          "globalRandom": "error",
+          "globalRandomInEffect": "error",
+          "globalTimers": "error",
+          "globalTimersInEffect": "error",
+          "instanceOfSchema": "error",
+          "layerMergeAllWithDependencies": "error",
+          "lazyEffect": "error",
+          "lazyPromiseInEffectSync": "error",
+          "leakingRequirements": "error",
+          "manualMetricTapToTrack": "error",
+          "mapConstToAs": "error",
+          "mapMapErrorToMapBoth": "error",
+          "mapSomeCatchNoSuchElement": "error",
+          "mapSomeToAsSome": "error",
+          "matchBooleanToIsSuccess": "error",
+          "matchEffectToMapBoth": "error",
+          "matchEffectToMatch": "error",
+          "matchToResultOrOption": "error",
+          "missedPipeableOpportunity": "error",
+          "missingEffectContext": "error",
+          "missingEffectError": "error",
+          "missingEffectServiceDependency": "error",
+          "missingLayerContext": "error",
+          "missingReturnYieldStar": "error",
+          "missingStarInYieldEffectGen": "error",
+          "multipleCatchTag": "error",
+          "multipleEffectProvide": "error",
+          "nestedEffectGenYield": "error",
+          "newPromise": "error",
+          "newSchemaClass": "error",
+          "nodeBuiltinImport": "error",
+          "nonObjectEffectServiceType": "error",
+          "obsoleteMatchImport": "error",
+          "obsoleteSchemaImport": "error",
+          "optionMatchToFromOption": "error",
+          "outdatedApi": "error",
+          "overriddenSchemaConstructor": "error",
+          "preferBarrelImport": "error",
+          "preferEffectArray": "error",
+          "preferEffectRecord": "error",
+          "preferEffectString": "error",
+          "preferNamespaceImport": "error",
+          "preferSchemaTaggedError": "error",
+          "preferSchemaTypeProperty": "error",
+          "preferSucceedSomeOrNone": "error",
+          "preferTypedSchemaDecoder": "error",
+          "preferUnsafeConstructor": "error",
+          "processEnv": "error",
+          "processEnvInEffect": "error",
+          "promiseInEffectSuccess": "error",
+          "provideLayerSucceedToProvideService": "error",
+          "provideMergeAllToArray": "error",
+          "raceFirstWithSleepToTimeout": "error",
+          "redundantMapError": "error",
+          "redundantOrDie": "error",
+          "redundantSchemaTagIdentifier": "error",
+          "resultMatchToFromResult": "error",
+          "returnEffectInGen": "error",
+          "runEffectInsideEffect": "error",
+          "runOfExitToRunExit": "error",
+          "schemaClassMissingBrand": "error",
+          "schemaClassObjectLiteral": "error",
+          "schemaLiteralNonFinite": "error",
+          "schemaNumber": "error",
+          "schemaOpaqueInstanceMember": "error",
+          "schemaStructWithTag": "error",
+          "schemaSync": "error",
+          "schemaSyncInEffect": "error",
+          "schemaUnionOfLiterals": "error",
+          "scopeInLayerEffect": "error",
+          "serviceNotAsClass": "error",
+          "strictBooleanExpressions": "error",
+          "suspendFailToFailSync": "error",
+          "syncToSucceed": "error",
+          "timeoutCatchTagToTimeoutOrElse": "error",
+          "tryCatchInEffectGen": "error",
+          "typeUnionToSchemaUnion": "error",
+          "unknownInEffectCatch": "error",
+          "unnecessaryArrowBlock": "error",
+          "unnecessaryEffectGen": "error",
+          "unnecessaryFailYieldableError": "error",
+          "unnecessaryPipe": "error",
+          "unnecessaryPipeChain": "error",
+          "unnecessaryTypeofType": "error",
+          "unsafeEffectTypeAssertion": "error",
+          "yieldInCallArgument": "error",
+
+          // Off by design, not deferred work.
+          //
+          // Effect's experimental and unstable modules (effect/unstable/cli,
+          // effect/unstable/http) are deliberate dependency choices; an
+          // allowlist would restate each import without checking its use.
+          "apiStabilityLeak": "off",
+          "experimentalApiUsage": "off",
+          "unstableApiUsage": "off",
+          // Requires a curried overload on every exported function of two
+          // or more parameters. Dual APIs are a combinator design, not a
+          // rule for every helper.
+          "missingPipeableSignature": "off",
+          // Rejects Effect.provide(Layer) at the runtime root too, where it
+          // is the correct way to own service lifetimes; its only remedy
+          // there is a suppression. multipleEffectProvide and
+          // layerMergeAllWithDependencies catch the composition mistakes.
+          "strictEffectProvide": "off"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "name": "@jasonkuhrt/config-presets",
+  "version": "0.0.0",
+  "description": "Strict tsconfig, Oxlint and Oxfmt presets for Effect TypeScript projects.",
+  "keywords": [
+    "effect",
+    "oxfmt",
+    "oxlint",
+    "preset",
+    "tsconfig",
+    "tsrs"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Jason Kuhrt",
+    "url": "https://kuhrt.me"
+  },
+  "files": [
+    "build",
+    "src/tsconfig.json"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    "./tsconfig": "./src/tsconfig.json",
+    "./oxlint": {
+      "types": "./build/oxlint.d.ts",
+      "default": "./build/oxlint.js"
+    },
+    "./oxfmt": {
+      "types": "./build/oxfmt.d.ts",
+      "default": "./build/oxfmt.js"
+    }
+  },
+  "scripts": {
+    "build": "tsrs -p tsconfig.build.json",
+    "check": "bun run check:format && bun run check:lint && bun run check:types && bun run build",
+    "check:format": "oxfmt --check",
+    "check:lint": "oxlint",
+    "check:types": "tsrs --noEmit --fast",
+    "fix": "bun run fix:format && bun run fix:lint",
+    "fix:format": "oxfmt",
+    "fix:lint": "oxlint --fix-dangerously",
+    "prepare": "effect-tsgo patch --typescript=false --tsrs && bun run build"
+  },
+  "dependencies": {
+    "@tsconfig/strictest": "2.0.8"
+  },
+  "devDependencies": {
+    "@effect/tsgo": "0.67.5",
+    "@types/bun": "1.4.4",
+    "oxfmt": "0.77.0",
+    "oxlint": "1.92.0",
+    "tsrs": "0.23.0-ts7.1.0-beta"
+  },
+  "peerDependencies": {
+    "@effect/tsgo": "0.67.5",
+    "@types/bun": "^1.4.4",
+    "oxfmt": "0.77.0",
+    "oxlint": "1.92.0",
+    "tsrs": "0.23.0-ts7.1.0-beta"
+  }
+}

@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Dependencies
+node_modules/
+
+# Build
+build/
+
+# Local agent config
+CLAUDE.local.md

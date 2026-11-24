@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "src",
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "declaration": true,
+    "tsBuildInfoFile": "node_modules/.cache/build.tsbuildinfo"
+  },
+  "include": ["src"]
+}

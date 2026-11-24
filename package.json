@@ -41,7 +41,8 @@
     "fix": "bun run fix:format && bun run fix:lint",
     "fix:format": "oxfmt",
     "fix:lint": "oxlint --fix-dangerously",
-    "prepare": "effect-tsgo patch --typescript=false --tsrs && bun run build"
+    "prepack": "bun run build",
+    "prepare": "effect-tsgo patch --typescript=false --tsrs"
   },
   "dependencies": {
     "@tsconfig/strictest": "2.0.8"
